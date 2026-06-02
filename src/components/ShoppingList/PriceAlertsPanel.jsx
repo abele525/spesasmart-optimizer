@@ -5,25 +5,10 @@
 import { useState } from 'react';
 import { Bell, Plus, Trash2, TrendingDown, X } from 'lucide-react';
 import { useShopping } from '../../contexts/ShoppingContext';
+import { getDemoPrice } from '../../lib/demoPrices';
 import toast from 'react-hot-toast';
 
-const DEMO_PRICES = {
-  'Pasta':      { min: 0.89, max: 1.59 },
-  'Latte':      { min: 1.19, max: 1.89 },
-  'Pane':       { min: 1.29, max: 2.49 },
-  'Uova':       { min: 2.49, max: 3.89 },
-  'Caffè':      { min: 2.99, max: 4.49 },
-  'Detersivo':  { min: 3.49, max: 5.99 },
-  default:      { min: 1.00, max: 3.00 },
-};
-
 const DEMO_STORES = ['Esselunga', 'Coop', 'Lidl', 'Carrefour', 'Conad', 'Penny'];
-
-function getDemoPrice(productName, idx) {
-  const range = DEMO_PRICES[productName.trim()] || DEMO_PRICES.default;
-  const seed  = (productName.trim().length + idx * 7) % 10;
-  return range.min + (seed / 10) * (range.max - range.min);
-}
 
 function getBestPrice(productName) {
   let best = Infinity;

@@ -14,26 +14,10 @@ import { solveTSP, buildHaversineMatrix } from '../../lib/algorithms/tsp';
 import { calcolaCostoReale, calcolaCostoConTraffico } from '../../lib/algorithms/costCalculator';
 import { searchNearbySupermarkets, getDistanceMatrix } from '../../lib/maps';
 import { printShoppingReport } from '../../lib/printReport';
+import { getDemoPrice } from '../../lib/demoPrices';
 import toast from 'react-hot-toast';
 
 const MAPS_LIBRARIES = ['places'];
-
-// Prezzi demo (in produzione vengono da Firestore/scraping)
-const DEMO_PRICES = {
-  'Pasta':      { min: 0.89, max: 1.59 },
-  'Latte':      { min: 1.19, max: 1.89 },
-  'Pane':       { min: 1.29, max: 2.49 },
-  'Uova':       { min: 2.49, max: 3.89 },
-  'Caffè':      { min: 2.99, max: 4.49 },
-  'Detersivo':  { min: 3.49, max: 5.99 },
-  default:      { min: 1.00, max: 3.00 },
-};
-
-export function getDemoPrice(productName, supermarketIndex) {
-  const range = DEMO_PRICES[productName] || DEMO_PRICES.default;
-  const seed  = (productName.length + supermarketIndex * 7) % 10;
-  return range.min + (seed / 10) * (range.max - range.min);
-}
 
 // Calcola il totale del percorso multi-negozio scegliendo il prezzo minimo per ogni prodotto.
 // Deriva i prezzi da priceData (già calcolato) invece di chiamare getDemoPrice di nuovo.
@@ -198,10 +182,6 @@ export default function RouteOptimizer() {
 
   function toggleSelect(sid) {
     setSelected((prev) => prev.includes(sid) ? prev.filter((s) => s !== sid) : [...prev, sid]);
-  }
-
-  function toggleSelectAll() {
-    setSelected(selected.length === supermarkets.length ? [] : supermarkets.map((s) => s.sid));
   }
 
   // Passo 3: calcola percorso ottimale e costo reale
