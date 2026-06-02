@@ -124,7 +124,7 @@ export default function MapView() {
           <AlertCircle className="h-10 w-10 text-amber-500 mx-auto mb-3" />
           <h3 className="font-semibold text-gray-900 mb-1">Mappa non disponibile</h3>
           <p className="text-sm text-gray-600">
-            Configura la variabile d'ambiente{' '}
+            Configura la variabile d&apos;ambiente{' '}
             <code className="bg-white px-1 py-0.5 rounded text-amber-700 text-xs">VITE_GOOGLE_MAPS_API_KEY</code>{' '}
             nel file <code className="bg-white px-1 py-0.5 rounded text-amber-700 text-xs">.env</code> per abilitare la mappa.
           </p>
@@ -259,7 +259,7 @@ export default function MapView() {
       {stores.length === 0 && (
         <div className="text-center py-4 text-sm text-gray-500">
           <MapPin className="h-5 w-5 mx-auto mb-1 text-gray-300" />
-          Esegui un'ottimizzazione per vedere i supermercati sulla mappa
+          Esegui un&apos;ottimizzazione per vedere i supermercati sulla mappa
         </div>
       )}
 

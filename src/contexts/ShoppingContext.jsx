@@ -3,7 +3,7 @@
 // Sincronizzazione real-time con Firestore per supportare
 // la funzionalità Family Cloud Sync (stile Bring!)
 // ============================================================
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import {
   collection,
   doc,
@@ -203,7 +203,7 @@ export function ShoppingProvider({ children }) {
     if (currentUser?.uid) {
       const key = `spesa_opt_${currentUser.uid}`;
       if (result) {
-        try { localStorage.setItem(key, JSON.stringify(result)); } catch {}
+        try { localStorage.setItem(key, JSON.stringify(result)); } catch (_e) { /* storage pieno */ }
       } else {
         localStorage.removeItem(key);
       }

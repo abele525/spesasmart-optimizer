@@ -348,7 +348,7 @@ function ScortaTab({ stockables, onReorder, onAddNew }) {
       )}
 
       <p className="text-xs text-gray-400">
-        Usa il pulsante "Scorta" su ogni prodotto per aggiungerlo o rimuoverlo da questa lista.
+        Usa il pulsante &quot;Scorta&quot; su ogni prodotto per aggiungerlo o rimuoverlo da questa lista.
       </p>
     </div>
   );

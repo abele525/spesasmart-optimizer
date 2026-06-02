@@ -2,7 +2,7 @@
 // RouteOptimizer — Componente principale per l'ottimizzazione
 // Step 1: posizione → Step 2: seleziona negozi + prezzi → Step 3: risultati
 // ============================================================
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Search, MapPin, TrendingDown, RefreshCw, Store, AlertCircle, Map, Printer, Star, Check as CheckIcon } from 'lucide-react';
 import { useJsApiLoader } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';

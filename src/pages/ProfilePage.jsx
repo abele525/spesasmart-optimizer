@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import {
   User, Car, Users, MapPin, Save, LogOut, Bell, Fuel,
-  ChevronRight, Link2, Shield, Trash2,
+  Link2, Shield, Trash2,
 } from 'lucide-react';
 import { useAuth }     from '../contexts/AuthContext';
 import { useShopping } from '../contexts/ShoppingContext';
@@ -359,7 +359,7 @@ export default function ProfilePage() {
             className="w-full text-left px-4 py-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-3 text-sm font-medium"
           >
             <LogOut className="h-4 w-4" />
-            Esci dall'account
+            Esci dall&apos;account
           </button>
         </div>
       </div>
