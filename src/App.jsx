@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ShoppingProvider }       from './contexts/ShoppingContext';
 import Layout                      from './components/Layout/Layout';
 import { FullPageLoader }          from './components/common/LoadingSpinner';
+import ErrorBoundary               from './components/common/ErrorBoundary';
 
 // Pagine
 import LoginPage     from './pages/LoginPage';
@@ -84,6 +85,7 @@ function AppRoutes() {
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <AuthProvider>
         <Toaster
@@ -102,5 +104,6 @@ export default function App() {
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }

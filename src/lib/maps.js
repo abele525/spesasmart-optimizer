@@ -2,6 +2,7 @@
 // maps.js — Utilità per Google Maps Platform
 // Wrapper per Distance Matrix API e Directions API
 // ============================================================
+import { haversineKm } from './algorithms/tsp.js';
 
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -162,13 +163,10 @@ export async function searchNearbySupermarkets(center, radiusKm = 20) {
         if (status === window.google.maps.places.PlacesServiceStatus.OK) {
           // Filtra solo i risultati entro il raggio specificato usando Haversine
           const filtered = results.filter((place) => {
-            const lat2 = place.geometry.location.lat();
-            const lng2 = place.geometry.location.lng();
-            const R = 6371;
-            const dLat = (lat2 - center.lat) * Math.PI / 180;
-            const dLng = (lng2 - center.lng) * Math.PI / 180;
-            const a = Math.sin(dLat/2)**2 + Math.cos(center.lat * Math.PI/180) * Math.cos(lat2 * Math.PI/180) * Math.sin(dLng/2)**2;
-            const distKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distKm = haversineKm(center, {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+            });
             return distKm <= radiusKm;
           });
 

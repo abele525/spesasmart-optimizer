@@ -1,82 +1,65 @@
 // ============================================================
 // Firestore Security Rules — SpesaSmart Optimizer
-// Garantisce la privacy degli utenti: ogni utente può leggere
-// e scrivere solo i propri dati.
 // ============================================================
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- Helper functions ---
-
-    // Verifica che l'utente sia autenticato
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Verifica che l'utente stia accedendo ai propri dati
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Verifica che l'utente appartenga alla stessa famiglia
-    function isFamilyMember(familyId) {
-      return isAuthenticated() &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.family_id == familyId;
+    // Controlla se il listId appartiene all'utente corrente.
+    // Per le liste famiglia verifica che il family_id nel documento utente
+    // corrisponda al family_id nel listId (es. "family_abc123").
+    function ownsListId(listId) {
+      return isAuthenticated() && (
+        listId == 'user_' + request.auth.uid ||
+        (listId.matches('family_.*') &&
+         exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         'family_id' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+         listId == 'family_' + get(/databases/$(database)/documents/users/$(request.auth.uid)).data.family_id)
+      );
     }
 
     // --- Collezione: users ---
-    // Ogni utente può leggere e modificare solo il proprio profilo
     match /users/{userId} {
       allow read, write: if isOwner(userId);
     }
 
     // --- Collezione: shopping_lists ---
-    // Accessibile solo al proprietario o ai membri della famiglia
     match /shopping_lists/{listId} {
-      allow read, write: if isAuthenticated() && (
-        resource.data.owner_uid == request.auth.uid ||
-        (resource.data.family_id != null && isFamilyMember(resource.data.family_id))
-      );
+      allow read, write, create: if ownsListId(listId);
 
-      allow create: if isAuthenticated() &&
-        request.resource.data.owner_uid == request.auth.uid;
-
-      // Sub-collezione degli item della lista
+      // Sub-collezione items — usa ownsListId sul listId del percorso
       match /items/{itemId} {
-        allow read, write: if isAuthenticated() && (
-          get(/databases/$(database)/documents/shopping_lists/$(listId)).data.owner_uid == request.auth.uid ||
-          (get(/databases/$(database)/documents/shopping_lists/$(listId)).data.family_id != null &&
-           isFamilyMember(get(/databases/$(database)/documents/shopping_lists/$(listId)).data.family_id))
-        );
+        allow read, write, create: if ownsListId(listId);
       }
     }
 
     // --- Collezione: supermarkets ---
-    // Dati pubblici: tutti possono leggere, nessuno può scrivere (solo admin via SDK)
     match /supermarkets/{sid} {
       allow read: if true;
-      allow write: if false; // Solo tramite Cloud Functions con Admin SDK
+      allow write: if false;
     }
 
     // --- Collezione: daily_prices ---
-    // Dati pubblici: tutti possono leggere, nessuno può scrivere (aggiornati dallo scraper)
     match /daily_prices/{priceId} {
       allow read: if true;
-      allow write: if false; // Solo tramite Cloud Functions con Admin SDK
+      allow write: if false;
     }
 
     // --- Collezione: price_alerts ---
-    // Gli alert di prezzo sono privati per ogni utente
+    // Il client deve sempre filtrare con .where('uid', '==', currentUser.uid)
     match /price_alerts/{alertId} {
-      // list: permette query filtrate per uid (la query usa where('uid','==',uid))
-      allow list: if isAuthenticated();
-      // get: verifica che il documento appartenga all'utente
-      allow get: if isAuthenticated() && resource.data.uid == request.auth.uid;
-      allow write: if isAuthenticated() && resource.data.uid == request.auth.uid;
-      allow create: if isAuthenticated() &&
-        request.resource.data.uid == request.auth.uid;
+      allow list, get: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write:     if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create:    if isAuthenticated() && request.resource.data.uid == request.auth.uid;
     }
   }
 }

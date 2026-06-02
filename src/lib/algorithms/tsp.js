@@ -65,9 +65,11 @@ export function twoOptImprove(route, distMatrix) {
   let improved = true;
   let bestRoute = [...route];
   let bestDistance = calcRouteDistance(bestRoute, distMatrix);
+  let iterations = 0;
 
   while (improved) {
     improved = false;
+    if (++iterations > 500) break;
     for (let i = 1; i < bestRoute.length - 1; i++) {
       for (let j = i + 1; j < bestRoute.length; j++) {
         // Inverti il segmento tra i e j
