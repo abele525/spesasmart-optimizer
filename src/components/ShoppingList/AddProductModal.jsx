@@ -2,8 +2,9 @@
 // AddProductModal — Modal per aggiungere un prodotto alla lista
 // ============================================================
 import { useState } from 'react';
-import { X, Plus, Package, Bell } from 'lucide-react';
+import { X, Plus, Package, Bell, ScanLine } from 'lucide-react';
 import { useShopping } from '../../contexts/ShoppingContext';
+import BarcodeScanner from './BarcodeScanner';
 import toast from 'react-hot-toast';
 
 const CATEGORIES = [
@@ -32,6 +33,7 @@ export default function AddProductModal({ onClose }) {
   const [isStockable, setIsStockable] = useState(false);
   const [targetPrice, setTargetPrice] = useState('');
   const [loading, setLoading]     = useState(false);
+  const [scanning, setScanning]   = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -56,7 +58,21 @@ export default function AddProductModal({ onClose }) {
     }
   }
 
+  function handleScanResult({ barcode, name: productName }) {
+    setScanning(false);
+    if (productName) {
+      setName(productName);
+      toast.success(`Prodotto trovato: ${productName}`);
+    } else {
+      toast(`Codice ${barcode} non trovato nel database — inserisci il nome manualmente`, { icon: '🔍' });
+    }
+  }
+
   return (
+    <>
+    {scanning && (
+      <BarcodeScanner onDetected={handleScanResult} onClose={() => setScanning(false)} />
+    )}
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl animate-slide-up">
         {/* Header modal */}
@@ -80,15 +96,25 @@ export default function AddProductModal({ onClose }) {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nome prodotto *
             </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="input-field"
-              placeholder="es. Pasta, Latte, Caffè..."
-              autoFocus
-              required
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="input-field flex-1"
+                placeholder="es. Pasta, Latte, Caffè..."
+                autoFocus
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setScanning(true)}
+                className="flex-shrink-0 p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-600 transition-colors"
+                title="Scansiona codice a barre"
+              >
+                <ScanLine className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           {/* Quantità e unità */}
@@ -193,5 +219,6 @@ export default function AddProductModal({ onClose }) {
         </form>
       </div>
     </div>
+    </>
   );
 }

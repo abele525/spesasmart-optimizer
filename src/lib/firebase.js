@@ -4,7 +4,11 @@
 // ============================================================
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
 import { getMessaging, isSupported } from 'firebase/messaging';
 
@@ -22,8 +26,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Servizi esportati
-export const auth      = getAuth(app);
-export const db        = getFirestore(app);
+export const auth = getAuth(app);
+
+// Firestore con persistenza offline (IndexedDB) per funzionare senza rete
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
 export const functions = getFunctions(app, 'europe-west1'); // Regione europea per rispettare GDPR
 export const googleProvider = new GoogleAuthProvider();
 
