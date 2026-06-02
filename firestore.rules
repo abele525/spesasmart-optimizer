@@ -54,6 +54,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // --- Collezione: meal_plans (MealPlanner AI) ---
+    // Ogni utente ha la propria sotto-collezione di piani pasto
+    match /meal_plans/{uid}/plans/{planId} {
+      allow read, write, delete: if isOwner(uid);
+    }
+
     // --- Collezione: price_alerts ---
     // Il client deve sempre filtrare con .where('uid', '==', currentUser.uid)
     match /price_alerts/{alertId} {
