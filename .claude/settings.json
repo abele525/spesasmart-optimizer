@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\sarab\\.claude\\projects\\c--Users-sarab-Desktop-Progetti-SpesaSmart-Optimizer\\memory"
+    ]
+  }
+}

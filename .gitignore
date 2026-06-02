@@ -1,0 +1,32 @@
+# Dipendenze
+node_modules/
+functions/node_modules/
+
+# Build
+dist/
+build/
+
+# Variabili d'ambiente (IMPORTANTE: mai committare!)
+.env
+.env.local
+.env.production
+
+# Log
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+.firebase/
+firebase-debug.log

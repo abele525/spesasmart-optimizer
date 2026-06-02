@@ -1,0 +1,37 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "daily_prices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "pid",          "order": "ASCENDING" },
+        { "fieldPath": "last_updated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "daily_prices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sid",          "order": "ASCENDING" },
+        { "fieldPath": "last_updated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "price_alerts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid",       "order": "ASCENDING" },
+        { "fieldPath": "is_active", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "shopping_lists",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "owner_uid",  "order": "ASCENDING" },
+        { "fieldPath": "updated_at", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
