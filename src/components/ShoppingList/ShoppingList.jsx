@@ -1,10 +1,10 @@
 // ============================================================
 // ShoppingList — Lista della spesa con tab Lista / Scorta / Alert
 // ============================================================
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Plus, ShoppingCart, Trash2, CheckCheck, Users, TrendingDown,
-  Package, Bell, RefreshCw,
+  Package, Bell, RefreshCw, Upload,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShopping } from '../../contexts/ShoppingContext';
@@ -36,11 +36,56 @@ const TABS = [
 ];
 
 export default function ShoppingList({ initialTab = 'lista' }) {
-  const { shoppingList, loading, clearChecked, updateItem, priceAlerts } = useShopping();
+  const { shoppingList, loading, clearChecked, updateItem, priceAlerts, addItem } = useShopping();
   const { userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showModal, setShowModal] = useState(false);
+  const [importing, setImporting] = useState(false);
   const navigate                  = useNavigate();
+  const importInputRef            = useRef(null);
+
+  // Mappa categorie MealPlanner → SpesaSmart
+  const CATEGORY_MAP = {
+    'Verdure':             'frutta_verdura',
+    'Frutta':              'frutta_verdura',
+    'Proteine (carne)':    'carne_pesce',
+    'Proteine (pesce)':    'carne_pesce',
+    'Uova e latticini':    'latticini',
+    'Cereali e pane':      'pasta_riso',
+    'Legumi':              'pasta_riso',
+    'Frutta secca e semi': 'snack',
+    'Condimenti e olio':   'altro',
+    'Altro':               'altro',
+  };
+
+  async function handleImport(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!data.spesasmart_import || !Array.isArray(data.items))
+        throw new Error('File non valido — usa il pulsante "Esporta per SpesaSmart" su MealPlanner AI.');
+      let count = 0;
+      for (const item of data.items) {
+        await addItem({
+          name: item.name,
+          quantity: item.quantity ?? 1,
+          unit: item.unit ?? 'pz',
+          category: CATEGORY_MAP[item.mealplanner_category] ?? item.category ?? 'altro',
+          is_stockable: false,
+        });
+        count++;
+      }
+      toast.success(`✅ ${count} ingredienti importati da MealPlanner!`);
+    } catch (err) {
+      toast.error(err.message || 'Errore durante l\'importazione');
+    } finally {
+      setImporting(false);
+    }
+  }
 
   const unchecked  = shoppingList.filter((i) => !i.checked);
   const checked    = shoppingList.filter((i) => i.checked);
@@ -99,10 +144,23 @@ export default function ShoppingList({ initialTab = 'lista' }) {
             </div>
           )}
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Aggiungi
-        </button>
+        <div className="flex gap-2">
+          {/* Importa da MealPlanner */}
+          <input ref={importInputRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+          <button
+            onClick={() => importInputRef.current?.click()}
+            disabled={importing}
+            title="Importa lista da MealPlanner AI"
+            className="flex items-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <Upload className="h-4 w-4" />
+            {importing ? 'Importo…' : 'Da MealPlanner'}
+          </button>
+          <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Aggiungi
+          </button>
+        </div>
       </div>
 
       {/* Pulsante ottimizza */}
