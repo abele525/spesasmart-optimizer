@@ -70,8 +70,11 @@ service cloud.firestore {
     // --- Collezione: price_alerts ---
     // Gli alert di prezzo sono privati per ogni utente
     match /price_alerts/{alertId} {
-      allow read, write: if isAuthenticated() &&
-        resource.data.uid == request.auth.uid;
+      // list: permette query filtrate per uid (la query usa where('uid','==',uid))
+      allow list: if isAuthenticated();
+      // get: verifica che il documento appartenga all'utente
+      allow get: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow write: if isAuthenticated() && resource.data.uid == request.auth.uid;
       allow create: if isAuthenticated() &&
         request.resource.data.uid == request.auth.uid;
     }
