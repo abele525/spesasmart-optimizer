@@ -44,11 +44,17 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/dashboard" className="flex items-center gap-2 text-primary-600 font-bold text-lg">
-            <ShoppingCart className="h-6 w-6" />
-            <span className="hidden sm:block">SpesaSmart</span>
-          </Link>
+          {/* Logo + link MealPlanner */}
+          <div className="flex items-center gap-3">
+            <Link to="/dashboard" className="flex items-center gap-2 text-primary-600 font-bold text-lg">
+              <ShoppingCart className="h-6 w-6" />
+              <span className="hidden sm:block">SpesaSmart</span>
+            </Link>
+            <a href="https://nutrition-self-six.vercel.app" target="_blank" rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1 text-xs text-gray-400 hover:text-green-600 transition-colors border border-gray-200 rounded-lg px-2 py-1 hover:border-green-300">
+              🥦 MealPlanner
+            </a>
+          </div>
 
           {/* Nav desktop */}
           <div className="hidden md:flex items-center gap-1">
