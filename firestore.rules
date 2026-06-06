@@ -55,8 +55,8 @@ service cloud.firestore {
     }
 
     // --- Collezione: meal_plans (MealPlanner AI) ---
-    // Ogni utente ha la propria sotto-collezione di piani pasto
-    match /meal_plans/{uid}/plans/{planId} {
+    // Copre piani (/plans/) e impostazioni (/settings/) dell'utente
+    match /meal_plans/{uid}/{document=**} {
       allow read, write, delete: if isOwner(uid);
     }
 
